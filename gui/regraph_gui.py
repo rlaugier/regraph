@@ -20,6 +20,14 @@ with st.expander("Help"):
     st.write("Attributes can be found in [the graphviz documentation](https://graphviz.org/doc/info/attrs.html).")
 with st.expander("Options"):
     encoding = st.text_input("Encoding", value="utf-8")
+    config_file = st.file_uploader("Load a config", type=["toml"])
+    if config_file is not None:
+        cfg_string = StringIO(config_file.getvalue().decode("utf-8")).read()
+        st.write(cfg_string)
+        regraph.load_config(string=cfg_string)
+        del cfg_string
+    else:
+        pass
 myfile = st.file_uploader("Upload a csv spreadsheet:", type=["csv"], )
 if myfile is None:
     st.write("Please load a file")

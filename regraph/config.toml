@@ -1,0 +1,17 @@
+
+[Input]
+req_id = "#"
+req_family = "Type"
+req_description = "Description"
+req_parents = "Linked req"
+req_Comments = "Comment"
+
+[Display]
+align_labels = true
+penwidth_node = 3.0
+penwidth_labelarrow = 3.0
+wrap_width = 50
+font_size = 9
+
+[Families]
+Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c"}

@@ -2,8 +2,12 @@
 from astropy import table
 from textwrap import wrap
 from graphviz import Digraph
+import toml
 from io import BytesIO
 from io import StringIO
+from pathlib import Path
+
+parent = Path(__file__).parent.absolute()
 
 from astropy.io import ascii
 
@@ -46,20 +50,20 @@ class RequirementSet(object):
             if verbose:
                 print(arow)
                 st.write(arow)
-            # print(arow["#"])
-            if isinstance(arow["#"], str):
-                reflist.append(arow["#"])
-                refdict[arow["#"]] = {
-                    "#":arow["#"],
-                    "Type":arow["Type"],
-                    "Description": rewrap(arow["Description"], self.attributes["wrap_width"]),
+            # print(arow[input["req_id"]])
+            if isinstance(arow[input["req_id"]], str):
+                reflist.append(arow[input["req_id"]])
+                refdict[arow[input["req_id"]]] = {
+                    "Req_id":arow[input["req_id"]],
+                    "Type":arow[input["req_family"]],
+                    "Description": rewrap(arow[input["req_description"]], self.attributes["wrap_width"]),
                 }
-                desclist.append( rewrap(arow["Description"], self.attributes["wrap_width"]))
-                if isinstance(arow["Linked req"], str):
-                    reflist = string2list(arow["Linked req"])
-                    refdict[arow["#"]]["parents"] = reflist
+                desclist.append( rewrap(arow[input["req_description"]], self.attributes["wrap_width"]))
+                if isinstance(arow[input["req_parents"]], str):
+                    reflist = string2list(arow[input["req_parents"]])
+                    refdict[arow[input["req_id"]]]["parents"] = reflist
                     for alinked in reflist:
-                        linklist.append((alinked, arow["#"]))
+                        linklist.append((alinked, arow[input["req_id"]]))
         self.reflist = reflist
         self.refdict = refdict
         self.desclist = desclist
@@ -101,19 +105,30 @@ class RequirementSet(object):
     def display_graph(self):
         st.graphviz_chart(self.mygraph)
 
-default_colordict = {
-    "Technical req": "#d08770",
-    "Science": "#88c0d0",
-    "Functional": "#a3be8c",
-}
+def load_config(file=None, string=None):
+    if file is not None:
+        print("Reading a file")
+        with open(file, "r") as myfile:
+            config = toml.load(myfile)
+    elif string is not None:
+        print("Reading a string")
+        print(string)
+        config = toml.loads(string)
+    else:
+        raise ValueError("Pleas provide either file or string")
+    default_colordict = config["Families"]["Family_colors"]
+    default_settings = {
+        "align_labels": config["Display"]["align_labels"],
+        "penwidth_node": str(config["Display"]["penwidth_node"]),
+        "penwidth_labelarrow": str(config["Display"]["penwidth_labelarrow"]),
+        "wrap_width": config["Display"]["wrap_width"],
+        "font_size": str(config["Display"]["font_size"]),
+        # "margin": str(st.number_input("Margin",min_value=0.01, max_value=1.0, value=0.05, step=0.01)),
+        "margin": "0.05,0.05"
+    }
+    input = config["Input"]
+    return config, input, default_settings, default_colordict
 
-default_settings = {
-    "align_labels": True,
-    "penwidth_node": str(3.),
-    "penwidth_labelarrow": str(3.),
-    "wrap_width": 50,
-    "font_size": str(9),
-    # "margin": str(st.number_input("Margin",min_value=0.01, max_value=1.0, value=0.05, step=0.01)),
-    "margin": "0.05,0.05"
+config, input, default_settings, default_colordict = load_config(file=parent/"config.toml")
+
     
-}
