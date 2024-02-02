@@ -17,7 +17,7 @@ setup(name='regraph',
       ],
       packages=['regraph'],
       install_requires=[
-        "streamlit","graphviz", "astropy", "textwrap", "io"
+        "streamlit","graphviz", "astropy", "textwrap"
     ],
       include_package_data=True,
       zip_safe=False)
