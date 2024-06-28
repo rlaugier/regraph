@@ -10,7 +10,6 @@ from regraph import default_settings
 
 
 verbose = st.checkbox("Verbose")
-    
 
 
 st.header("Requirement Graph Processor")
@@ -24,10 +23,17 @@ with st.expander("Options"):
     if config_file is not None:
         cfg_string = StringIO(config_file.getvalue().decode("utf-8")).read()
         st.write(cfg_string)
-        regraph.load_config(string=cfg_string)
+        aconfig, aninput, adefault_settings, adefault_colordict = regraph.load_config(string=cfg_string, verbose=verbose)
+        
         del cfg_string
     else:
-        pass
+        if verbose:
+            print("using defaults")
+        st.write("regraph.default")
+        aconfig, aninput, adefault_settings, adefault_colordict = (regraph.dconfig,
+                                                            regraph.dinput,
+                                                            regraph.default_settings,
+                                                            regraph.default_colordict)
 myfile = st.file_uploader("Upload a csv spreadsheet:", type=["csv"], )
 if myfile is None:
     st.write("Please load a file")
@@ -55,11 +61,14 @@ with st.sidebar:
     
 ##################################################################
 myobj = regraph.RequirementSet(mytable, verbose=verbose,
-                            colordict=default_colordict, 
-                            attributes=user_settings)
+                            colordict=adefault_colordict, 
+                            attributes=user_settings,
+                            config=aconfig,
+                            input=aninput,
+                            )
 
 
-myobj.refresh_graph_graphviz(verbose=verbose)
+myobj.refresh_graph_graphviz_labels(verbose=verbose)
 if include_legen:
     myobj.draw_legend()
 

@@ -4,7 +4,7 @@ req_id = "#"
 req_family = "Type"
 req_description = "Description"
 req_parents = "Linked req"
-req_Comments = "Comment"
+req_comments = "Comment"
 
 [Display]
 align_labels = true
