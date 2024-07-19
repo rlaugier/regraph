@@ -26,9 +26,29 @@ def string2list(astr):
     alist = mystr.split(sep=",")
     alist = [anitem.strip() for anitem in alist]
     return alist
+
+def escape_string(string):
+    print("Escaping :")
+    print(string)
+    escaped_string = string.replace('\\', '\\\\')\
+                           .replace("http://", "")\
+                           .replace("https://", "")\
+                           .replace('"', '\\"')\
+                           .replace('\n', '\\n')\
+                           .replace('\r', '\\r')\
+                           .replace('\t', '\\t')\
+                           .replace('\b', '\\b')\
+                           .replace('\f', '\\f')
+    print("To:" )
+    print(escaped_string)
+    return escaped_string
+
 def rewrap(astring, nchar):
-    newstring = "\n".join(wrap(astring, width=nchar))
+    escaped_string = escape_string(astring)
+    newstring = "\n".join(wrap(escaped_string, width=nchar))
     return newstring
+
+
 
 # Rading the list of requirements
 class RequirementSet(object):
@@ -83,6 +103,11 @@ class RequirementSet(object):
                     "Comments":rewrap(str(arow[self.input["req_comments"]]), self.attributes["wrap_width"]),
                     "Description": rewrap(str(arow[self.input["req_description"]]), self.attributes["wrap_width"]),
                 }
+                if "link" in self.input:
+                    if arow[self.input["link"]] != "--":
+                        refdict[arow[self.input["req_id"]]]["Link"] = arow[self.input["link"]]
+                    else:
+                        refdict[arow[self.input["req_id"]]]["Link"] = None
                 myitem = refdict[arow[self.input["req_id"]]]
                 myitem["Common"] = f"{myitem['Req_id']}  --  {myitem['Description']}"
                 desclist.append( rewrap(arow[self.input["req_description"]], self.attributes["wrap_width"]))
@@ -146,7 +171,8 @@ class RequirementSet(object):
                     print(anitem["Type"])
                 self.mygraph.node(anitem["Common"], shape="rect",
                                 color=self.colordict[anitem["Type"]],
-                                penwidth=self.attributes["penwidth_node"])
+                                penwidth=self.attributes["penwidth_node"],
+                                href=anitem["Link"])
                 with self.mygraph.subgraph() as s:
                     if self.attributes["align_labels"]:
                         s.attr(rank="sink")

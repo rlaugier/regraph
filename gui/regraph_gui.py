@@ -47,6 +47,7 @@ mytable = ascii.read(mylines, format="csv", delimiter=",", data_start=1)
 
 with st.sidebar:
     st.write("## Adjust preferences")
+    box_mode = st.selectbox("What type of display", ["all-in-one", "id-and-label"])
     include_legen = st.checkbox("Include legend", value=True)
     user_settings = {
         "align_labels": st.checkbox("Align labels", value=True),
@@ -68,7 +69,13 @@ myobj = regraph.RequirementSet(mytable, verbose=verbose,
                             )
 
 
-myobj.refresh_graph_graphviz_labels(verbose=verbose)
+if "all-in-one" in box_mode:
+    myobj.refresh_graph = myobj.refresh_graph_graphviz
+elif "id-and-label" in box_mode:
+    myobj.refresh_graph = myobj.refresh_graph_graphviz_labels
+
+myobj.refresh_graph(verbose=verbose)
+
 if include_legen:
     myobj.draw_legend()
 
@@ -82,6 +89,11 @@ with st.expander("Informations"):
     st.write(f"Links: {len(myobj.linklist)}")
     if st.checkbox("Show table"):
         mytable
+    items_to_show = {"none":None, "reflist":myobj.reflist,
+                    "refdict":myobj.refdict, "desclist":myobj.desclist,
+                    "linklist":myobj.linklist}
+    itemshown = st.selectbox("Item to show", items_to_show.keys())
+    st.write(items_to_show[itemshown])    
 #####################################################################
 # proj_name = st.text_input("Project name", value="tac_graph")
 if st.checkbox("Show (ok on small graphs)"):
@@ -103,4 +115,6 @@ if st.checkbox("Save"):
 if verbose:
     for akey, anitem in myobj.redict:
         st.write(anitem["Description"])
+
+
 
