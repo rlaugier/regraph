@@ -8,6 +8,50 @@ import streamlit as st
 from regraph import default_colordict
 from regraph import default_settings
 
+LIFE_DEFAULT_CONFIG = """
+[Input]
+req_id = "ID"
+req_family = "Level"
+req_description = "Requirement"
+req_parents = "Parent ID"
+# req_comments = "Rationale and comments"
+req_comments = "Assumed parameter's value"
+# req_comments = "Verification Method"
+link = "Redmine Issue"
+
+[Display]
+align_labels = true
+penwidth_node = 3.0
+penwidth_labelarrow = 3.0
+wrap_width = 50
+font_size = 9
+
+[Families]
+Family_colors = {0 = "#d08770", 1 = "#88c0d0", 2 = "#a3be8c", 3 = "#b197fc"}
+
+"""
+ESA_DEFAULT_CONFIG = """
+[Input]
+req_id = "#"
+req_family = "Type"
+req_description = "Description"
+req_parents = "Linked req"
+req_comments = "Comment"
+link = "None"
+
+[Display]
+align_labels = true
+penwidth_node = 3.0
+penwidth_labelarrow = 3.0
+wrap_width = 50
+font_size = 9
+
+[Families]
+Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c"}
+
+"""
+
+
 
 verbose = st.checkbox("Verbose")
 
@@ -18,22 +62,34 @@ with st.expander("Help"):
     st.write("This renderer has formatting options")
     st.write("Attributes can be found in [the graphviz documentation](https://graphviz.org/doc/info/attrs.html).")
 with st.expander("Options"):
+    used_defaults = False
     encoding = st.text_input("Encoding", value="utf-8")
-    config_file = st.file_uploader("Load a config", type=["toml"])
-    if config_file is not None:
-        cfg_string = StringIO(config_file.getvalue().decode("utf-8")).read()
-        st.write(cfg_string)
-        aconfig, aninput, adefault_settings, adefault_colordict = regraph.load_config(string=cfg_string, verbose=verbose)
-        
-        del cfg_string
+    which_config = st.selectbox(label="Starting config", options=["LIFE default", "ESA default", "Upload"])
+    if which_config == "LIFE default":
+        cfg_string = LIFE_DEFAULT_CONFIG
+    elif which_config == "ESA default":
+        cfg_string = ESA_DEFAULT_CONFIG
+    elif which_config == "Upload":
+        config_file = st.file_uploader("Load a config", type=["toml"])
+        if config_file is not None:
+            cfg_string = StringIO(config_file.getvalue().decode("utf-8")).read()
     else:
         if verbose:
             print("using defaults")
+        used_defaults = True
+    if not used_defaults:
+        modified_cfg_string = st.text_area(label="The configuration text", value=cfg_string,
+                                            height=600)
+        aconfig, aninput, adefault_settings, adefault_colordict = regraph.load_config(string=modified_cfg_string, verbose=verbose)
+        del cfg_string
+    else:
         st.write("regraph.default")
         aconfig, aninput, adefault_settings, adefault_colordict = (regraph.dconfig,
                                                             regraph.dinput,
                                                             regraph.default_settings,
                                                             regraph.default_colordict)
+with st.expander("More options"):
+    st.write("Interactive options")
 myfile = st.file_uploader("Upload a csv spreadsheet:", type=["csv"], )
 if myfile is None:
     st.write("Please load a file")
@@ -112,8 +168,10 @@ if st.checkbox("Save"):
         st.download_button(label="Download graph",
                                 data=buffer)
 
+
 if verbose:
-    for akey, anitem in myobj.redict:
+    st.write(myobj.config)
+    for akey, anitem in myobj.refdict:
         st.write(anitem["Description"])
 
 
