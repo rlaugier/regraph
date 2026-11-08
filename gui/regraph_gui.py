@@ -8,8 +8,31 @@ import streamlit as st
 from regraph import default_colordict
 from regraph import default_settings
 
+ESO_DEFAULT_CONFIG = """
+[Input]
+delimiter = "#"
+req_id = "ID"
+req_family = "Type"
+req_description = "Description"
+req_parents = "Linked req"
+req_comments = "Comment"
+link = "External"
+
+[Display]
+align_labels = true
+penwidth_node = 3.0
+penwidth_labelarrow = 3.0
+wrap_width = 50
+font_size = 9
+
+[Families]
+Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c", Component req = "#a3be8c"}
+
+"""
+
 LIFE_DEFAULT_CONFIG = """
 [Input]
+delimiter = ","
 req_id = "ID"
 req_family = "Level"
 req_description = "Requirement"
@@ -32,6 +55,7 @@ Family_colors = {0 = "#d08770", 1 = "#88c0d0", 2 = "#a3be8c", 3 = "#b197fc"}
 """
 ESA_DEFAULT_CONFIG = """
 [Input]
+delimiter = ","
 req_id = "#"
 req_family = "Type"
 req_description = "Description"
@@ -50,26 +74,6 @@ font_size = 9
 Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c"}
 
 """
-ESO_DEFAULT_CONFIG = """
-[Input]
-req_id = "ID"
-req_family = "Type"
-req_description = "Description"
-req_parents = "Linked req"
-req_comments = "Comment"
-link = "External"
-
-[Display]
-align_labels = true
-penwidth_node = 3.0
-penwidth_labelarrow = 3.0
-wrap_width = 50
-font_size = 9
-
-[Families]
-Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c", Component req = "#a3be8c"}
-
-"""
 
 verbose = st.checkbox("Verbose")
 
@@ -83,6 +87,7 @@ with st.expander("Options"):
     used_defaults = False
     encoding = st.text_input("Encoding", value="utf-8")
     which_config = st.selectbox(label="Starting config", options=["ESO default", "LIFE default", "ESA default", "Upload"])
+
     if which_config == "LIFE default":
         cfg_string = LIFE_DEFAULT_CONFIG
     elif which_config == "ESA default":
@@ -108,18 +113,26 @@ with st.expander("Options"):
                                                             regraph.dinput,
                                                             regraph.default_settings,
                                                             regraph.default_colordict)
+    st.write(aconfig["Input"])
 with st.expander("More options"):
     st.write("Interactive options")
-myfile = st.file_uploader("Upload a csv spreadsheet:", type=["csv"], )
+isxls = st.toggle(label="Use xls", value=False)
+if isxls:
+    myfile = st.file_uploader("Upload a csv spreadsheet:", type=["xls", "xlsx"], )
+else:
+    myfile = st.file_uploader("Upload a csv spreadsheet:", type=["csv"], )
 if myfile is None:
     st.write("Please load a file")
     quit()
-mydata = StringIO(myfile.getvalue().decode(encoding))
-mylines = mydata.readlines()
-
-
-mytable = ascii.read(mylines, format="csv", delimiter=",", data_start=1)
-
+if not isxls:
+    mydata = StringIO(myfile.getvalue().decode(encoding))
+    mylines = mydata.readlines()
+    mytable = ascii.read(mylines, format="csv", delimiter=aconfig["Input"]["delimiter"], data_start=1)
+else :
+    import pandas as pd
+    from astropy.table import Table
+    mytab = pd.read_excel(myfile)
+    mytable = Table.from_pandas(mytab)
 
 with st.sidebar:
     st.write("## Adjust preferences")
