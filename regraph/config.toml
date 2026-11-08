@@ -5,7 +5,7 @@ req_family = "Type"
 req_description = "Description"
 req_parents = "Linked req"
 req_comments = "Comment"
-link = "None"
+link = "External"
 
 [Display]
 align_labels = true

@@ -50,8 +50,26 @@ font_size = 9
 Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c"}
 
 """
+ESO_DEFAULT_CONFIG = """
+[Input]
+req_id = "ID"
+req_family = "Type"
+req_description = "Description"
+req_parents = "Linked req"
+req_comments = "Comment"
+link = "External"
 
+[Display]
+align_labels = true
+penwidth_node = 3.0
+penwidth_labelarrow = 3.0
+wrap_width = 50
+font_size = 9
 
+[Families]
+Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c", Component req = "#a3be8c"}
+
+"""
 
 verbose = st.checkbox("Verbose")
 
@@ -64,11 +82,13 @@ with st.expander("Help"):
 with st.expander("Options"):
     used_defaults = False
     encoding = st.text_input("Encoding", value="utf-8")
-    which_config = st.selectbox(label="Starting config", options=["LIFE default", "ESA default", "Upload"])
+    which_config = st.selectbox(label="Starting config", options=["ESO default", "LIFE default", "ESA default", "Upload"])
     if which_config == "LIFE default":
         cfg_string = LIFE_DEFAULT_CONFIG
     elif which_config == "ESA default":
         cfg_string = ESA_DEFAULT_CONFIG
+    elif which_config == "ESO default":
+        cfg_string = ESO_DEFAULT_CONFIG
     elif which_config == "Upload":
         config_file = st.file_uploader("Load a config", type=["toml"])
         if config_file is not None:
