@@ -26,7 +26,7 @@ wrap_width = 50
 font_size = 9
 
 [Families]
-Family_colors = {Technical req = "#d08770", Science = "#88c0d0", Functional = "#a3be8c", Component req = "#a3be8c"}
+Family_colors = {Technical req = "#b48ead", Functional = "#a3be8c", Performance = "#d08770", Component req = "#8fbcbb", General = "#88c0d0"}
 
 """
 
@@ -204,8 +204,7 @@ if st.checkbox("Save"):
 
 if verbose:
     st.write(myobj.config)
-    for akey, anitem in myobj.refdict:
-        st.write(anitem["Description"])
+    st.write(myobj.refdict)
 
 
 

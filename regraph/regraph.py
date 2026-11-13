@@ -38,7 +38,8 @@ def escape_string(string):
                            .replace('\r', '\\r')\
                            .replace('\t', '\\t')\
                            .replace('\b', '\\b')\
-                           .replace('\f', '\\f')
+                           .replace('\f', '\\f')\
+                           .replace(":","<colon>")
     print("To:" )
     print(escaped_string)
     return escaped_string
@@ -87,11 +88,10 @@ class RequirementSet(object):
             print(self.table.colnames)
         for arow in self.table:
             if self.verbose:
-                print(arow)
+                print(arow[self.input["req_id"]])
                 # st.write(arow)
             if self.verbose:
                 st.write("input in read_table")
-                st.write(self.input)
                 print("dict?", isinstance(self.input, dict))
                 print("Getting column:", self.input["req_id"])
                 print(isinstance(arow[self.input["req_id"]], str))
@@ -136,6 +136,7 @@ class RequirementSet(object):
 
     def refresh_graph_graphviz_labels(self, verbose):
         self.mygraph = Digraph()
+        self.mygraph.attr(rankdir="TB")
         self.mygraph.attr(rankdir="LR")
         self.mygraph.attr("node", )
         # print(self.colordict)
@@ -166,7 +167,7 @@ class RequirementSet(object):
             self.mygraph.attr(rankdir="LR")
             self.mygraph.attr("node", )
             # print(self.colordict)
-            for akey, anitem in self.refdict.items():
+            for akey, anitem in reversed(self.refdict.items()):
                 if verbose:
                     print(anitem["Type"])
                 self.mygraph.node(anitem["Common"], shape="rect",
