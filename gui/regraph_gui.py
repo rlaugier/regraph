@@ -26,7 +26,7 @@ wrap_width = 50
 font_size = 9
 
 [Families]
-Family_colors = {Technical req = "#b48ead", Functional = "#a3be8c", Performance = "#d08770", Component req = "#8fbcbb", General = "#88c0d0"}
+Family_colors = {Technical req = "#b48ead", Functional = "#a3be8c", Performance = "#d08770", Component req = "#8fbcbb", General = "#88c0d0", Technical req metro = "#7b68ee"}
 
 """
 

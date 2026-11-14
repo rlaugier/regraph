@@ -160,7 +160,7 @@ class RequirementSet(object):
                             color=self.colordict[anitem["Type"]],
                             penwidth=self.attributes["penwidth_labelarrow"])
         for alink in self.linklist:
-            self.mygraph.edge(alink[0], alink[1])
+            self.mygraph.edge(alink[0], alink[1], label=f"{alink[0]} -> {alink[1]}")
 
     def refresh_graph_graphviz(self, verbose):
             self.mygraph = Digraph()
@@ -190,7 +190,7 @@ class RequirementSet(object):
             for alink in self.linklist:
                 linkstart = self.refdict[alink[0]]["Common"]
                 linkend = self.refdict[alink[1]]["Common"]
-                self.mygraph.edge(linkstart, linkend)
+                self.mygraph.edge(linkstart, linkend, label=f"{alink[0]} -> {alink[1]}")
             
     def display_graph(self):
         st.graphviz_chart(self.mygraph)
