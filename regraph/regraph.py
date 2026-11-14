@@ -82,6 +82,7 @@ class RequirementSet(object):
         refdict = {}
         desclist = []
         linklist = []
+        shortlinklist = []
         if self.verbose:
             print("Starting to read")
             print("=====================")
@@ -115,6 +116,7 @@ class RequirementSet(object):
                     reflist = string2list(arow[self.input["req_parents"]])
                     refdict[arow[self.input["req_id"]]]["parents"] = reflist
                     for alinked in reflist:
+                        shortlinklist.append((alinked, arow[self.input["req_id"]]))
                         linklist.append((alinked, arow[self.input["req_id"]]))
         # Quick fix: when types are int, then it poses proble to match with colors.
         for akey, anitem in refdict.items():
@@ -125,6 +127,7 @@ class RequirementSet(object):
         self.refdict = refdict
         self.desclist = desclist
         self.linklist = linklist
+        self.shortlinklist = shortlinklist
 
     def draw_legend(self,):
         with self.mygraph.subgraph(name="cluster_legend") as legend:
